@@ -23,7 +23,7 @@ class PA100K(Dataset):
             data/ # images
             annotation.mat
     """
-    dataset_dir = 'PA-100K'
+    dataset_dir = 'PA100K'
 
     def __init__(self, root='', **kwargs):
         self.root = root

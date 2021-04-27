@@ -9,7 +9,7 @@ MODEL:
     FEAT_DIM: 2048
     WITH_IBN: False
     PRETRAIN: True
-    PRETRAIN_PATH: /export/home/lxy/.cache/torch/checkpoints/resnet50-19c8e357.pth
+    PRETRAIN_PATH: ../pretrain_model/resnet50-19c8e357.pth
 
   HEADS:
     NAME: AttrHead

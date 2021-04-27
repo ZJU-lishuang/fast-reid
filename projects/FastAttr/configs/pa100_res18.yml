@@ -1,0 +1,25 @@
+_BASE_: Base-attribute.yml
+
+DATASETS:
+  NAMES: ("PA100K",)
+  TESTS: ("PA100K",)
+
+MODEL:
+
+  BACKBONE:
+    NAME: build_resnet_backbone
+    DEPTH: 18x
+    NORM: BN
+    LAST_STRIDE: 2
+    FEAT_DIM: 512
+    PRETRAIN: False
+
+INPUT:
+  SIZE_TRAIN: [ 128, 96 ]
+  SIZE_TEST: [ 128, 96 ]
+
+DATALOADER:
+  NUM_INSTANCE: 2
+  NUM_WORKERS: 6
+
+OUTPUT_DIR: projects/FastAttr/logs/pa100k/strong_baseline
