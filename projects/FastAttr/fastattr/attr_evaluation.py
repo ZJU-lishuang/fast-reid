@@ -30,7 +30,7 @@ class AttrEvaluator(DatasetEvaluator):
         self.gt_labels = []
 
     def process(self, inputs, outputs):
-        self.gt_labels.extend(inputs["targets"])
+        self.gt_labels.extend(inputs["targets"].cpu())
         self.pred_logits.extend(outputs.cpu())
 
     @staticmethod
