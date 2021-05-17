@@ -5,6 +5,7 @@
 """
 
 # Attributed datasets
-from .pa100k import PA100K
+# from .pa100k import PA100K
+from .carattr import CarAttr
 # from .market1501attr import Market1501Attr
 # from .dukemtmcattr import DukeMTMCAttr

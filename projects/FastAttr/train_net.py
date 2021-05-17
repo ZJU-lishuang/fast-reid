@@ -16,6 +16,8 @@ from fastreid.data.datasets import DATASET_REGISTRY
 from fastreid.data.build import _root, build_reid_train_loader, build_reid_test_loader
 from fastreid.data.transforms import build_transforms
 from fastreid.utils import comm
+from collections import OrderedDict
+from fastreid.evaluation import (inference_on_dataset, print_csv_format)
 
 from fastattr import *
 
@@ -34,7 +36,9 @@ class AttrTrainer(DefaultTrainer):
         model = DefaultTrainer.build_model(cfg)
         if cfg.MODEL.LOSSES.BCE.WEIGHT_ENABLED and \
                 AttrTrainer.sample_weights is not None:
-            setattr(model, "sample_weights", AttrTrainer.sample_weights.to(model.device))
+            setattr(model, "sample_weights1", AttrTrainer.sample_weights[0].to(model.device))
+            setattr(model, "sample_weights2", AttrTrainer.sample_weights[1].to(model.device))
+            # setattr(model, "sample_weights", AttrTrainer.sample_weights.to(model.device))
         else:
             setattr(model, "sample_weights", None)
         return model
@@ -79,6 +83,51 @@ class AttrTrainer(DefaultTrainer):
     def build_evaluator(cls, cfg, dataset_name, output_folder=None):
         data_loader = cls.build_test_loader(cfg, dataset_name)
         return data_loader, AttrEvaluator(cfg, output_folder)
+
+    @classmethod
+    def test(cls, cfg, model):
+        """
+        Args:
+            cfg (CfgNode):
+            model (nn.Module):
+        Returns:
+            dict: a dict of result metrics
+        """
+        logger = logging.getLogger(__name__)
+
+        results = OrderedDict()
+        for idx, dataset_name in enumerate(cfg.DATASETS.TESTS):
+            logger.info("Prepare testing set")
+            try:
+                data_loader, evaluator = cls.build_evaluator(cfg, dataset_name)
+            except NotImplementedError:
+                logger.warn(
+                    "No evaluator found. implement its `build_evaluator` method."
+                )
+                results[dataset_name] = {}
+                continue
+            results_i = inference_on_dataset(model, data_loader, evaluator, flip_test=cfg.TEST.FLIP.ENABLED)
+            # results[dataset_name] = results_i
+            if len(results_i) == 2:
+                results["type"] = results_i[0]
+                results["country"] = results_i[1]
+
+            if comm.is_main_process():
+                assert isinstance(
+                    results, dict
+                ), "Evaluator must return a dict on the main process. Got {} instead.".format(
+                    results
+                )
+                logger.info("Evaluation results for {} in csv format:".format(dataset_name))
+                results_i[0]['dataset'] = dataset_name
+                results_i[1]['dataset'] = dataset_name
+                print_csv_format(results_i[0])
+                print_csv_format(results_i[1])
+
+        if len(results) == 1:
+            results = list(results.values())[0]
+
+        return results
 
 
 def setup(args):

@@ -103,11 +103,17 @@ class Dataset(object):
             numalign="left",
         )
         logger.info(f"=> Loaded {self.__class__.__name__} in csv format: \n" + colored(table, "cyan"))
-        logger.info("attributes:")
-        for label, attr in self.attr_dict.items():
-            logger.info('{:3d}: {}'.format(label, attr))
-        logger.info("------------------------------")
-        logger.info("# attributes: {}".format(len(self.attr_dict)))
+        # logger.info("attributes:")
+        for single_attr_dict in self.attr_dict:
+            logger.info("attributes:")
+            for label, attr in single_attr_dict.items():
+                logger.info('{:3d}: {}'.format(label, attr))
+            logger.info("------------------------------")
+            logger.info("# attributes: {}".format(len(single_attr_dict)))
+        # for label, attr in self.attr_dict.items():
+        #     logger.info('{:3d}: {}'.format(label, attr))
+        # logger.info("------------------------------")
+        # logger.info("# attributes: {}".format(len(self.attr_dict)))
 
     def show_test(self):
         num_test = len(self.test)

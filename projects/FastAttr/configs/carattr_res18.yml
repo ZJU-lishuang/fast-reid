@@ -1,11 +1,10 @@
 _BASE_: Base-attribute.yml
 
 DATASETS:
-  NAMES: ("PA100K",)
-  TESTS: ("PA100K",)
+  NAMES: ("CarAttr",)
+  TESTS: ("CarAttr",)
 
 MODEL:
-
   BACKBONE:
     NAME: build_resnet_backbone
     DEPTH: 18x
@@ -14,12 +13,29 @@ MODEL:
     FEAT_DIM: 512
     PRETRAIN: False
 
+  HEADS:
+    NUM_TYPES: 2
+    NUM_TYPE_CLASSES: [ 7,1]
+
 INPUT:
-  SIZE_TRAIN: [ 128, 96 ]
-  SIZE_TEST: [ 128, 96 ]
+  SIZE_TRAIN: [ 128, 256 ]
+  SIZE_TEST: [ 128, 256 ]
+
+  FLIP:
+    ENABLED: False
+
+  PADDING:
+    ENABLED: False
 
 DATALOADER:
   NUM_INSTANCE: 2
   NUM_WORKERS: 6
+
+SOLVER:
+  IMS_PER_BATCH: 2
+
+TEST:
+  EVAL_PERIOD: 1
+  IMS_PER_BATCH: 2
 
 OUTPUT_DIR: projects/FastAttr/logs/pa100k/strong_baseline

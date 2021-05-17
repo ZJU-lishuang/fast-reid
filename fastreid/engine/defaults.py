@@ -153,8 +153,11 @@ class DefaultPredictor:
         with torch.no_grad():  # https://github.com/sphinx-doc/sphinx/issues/4258
             predictions = self.model(inputs)
             # Normalize feature to compute cosine distance
-            features = F.normalize(predictions)
-            features = features.cpu().data
+            features1 = F.normalize(predictions[0])
+            features2 = F.normalize(predictions[1])
+            features1 = features1.cpu().data
+            features2 = features2.cpu().data
+            features=[features1,features2]
             return features
 
 

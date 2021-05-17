@@ -14,3 +14,6 @@ def add_attr_config(cfg):
     _C.MODEL.LOSSES.BCE.SCALE = 1.
 
     _C.TEST.THRES = 0.5
+
+    _C.MODEL.HEADS.NUM_TYPES = 1
+    _C.MODEL.HEADS.NUM_TYPE_CLASSES = [3,4,5]
