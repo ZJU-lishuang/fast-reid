@@ -20,7 +20,14 @@ def ratio2weight(targets, ratio):
 def cross_entropy_sigmoid_loss(pred_class_logits, gt_classes, sample_weight=None):
     loss1 = F.binary_cross_entropy_with_logits(pred_class_logits[0], gt_classes[0], reduction='none')
     loss2 = F.binary_cross_entropy_with_logits(pred_class_logits[1], gt_classes[1], reduction='none')
-
+    batchsize1 = torch.zeros_like(gt_classes[0])
+    batchsize2 = torch.zeros_like(gt_classes[1])
+    for index,gt_classes1 in enumerate(gt_classes[0]):
+        batchsize1[index]=gt_classes1.max()
+    for index,gt_classes2 in enumerate(gt_classes[1]):
+        batchsize2[index]=gt_classes2.max()
+    loss1 = loss1 * batchsize1
+    loss2 = loss2 * batchsize2
     if sample_weight is not None:
         targets_mask1 = torch.where(gt_classes[0].detach() > 0.5,
                                    torch.ones(1, device="cuda"), torch.zeros(1, device="cuda"))  # dtype float32

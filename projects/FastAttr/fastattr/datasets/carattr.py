@@ -62,7 +62,7 @@ class CarAttr(Dataset):
             data/ # images
             annotation.mat
     """
-    dataset_dir = 'attroutput'
+    dataset_dir = 'plate_attr'
 
     def __init__(self, root='', **kwargs):
         self.root = root
@@ -73,23 +73,25 @@ class CarAttr(Dataset):
         class_name1 = osp.join(self.dataset_dir, "classes1.names")
         with open(class_name1, 'r') as f:
             names1 = np.array([x for x in f.read().strip().splitlines()], dtype=np.str)  # labels
+        names1=np.delete(names1, np.argwhere(names1 == 'ignore'), 0)
         attr_dict1 = {i: str(attr) for i, attr in enumerate(names1)}
         self.num_classes1 = len(names1)
 
         class_name2 = osp.join(self.dataset_dir, "classes2.names")
         with open(class_name2, 'r') as f:
             names2 = np.array([x for x in f.read().strip().splitlines()], dtype=np.str)  # labels
+        names2=np.delete(names2, np.argwhere(names2 == 'ignore'), 0)
         attr_dict2 = {i: str(attr) for i, attr in enumerate(names2)}
         self.num_classes2 = len(names2)
 
-        self.data_dir = "../data/license_platetrain.txt"
+        self.data_dir = "../data/train.txt"
         train = self.extract_data()
 
-        self.data_dir = "../data/license_platevalid.txt"
+        self.data_dir = "../data/valid.txt"
 
         val = self.extract_data()
 
-        self.data_dir = "../data/license_platevalid.txt"
+        self.data_dir = "../data/valid.txt"
 
         test = self.extract_data()
 
@@ -116,15 +118,17 @@ class CarAttr(Dataset):
                     if len(l):
                         line = []
                         line1 = np.zeros(self.num_classes1)
-                        line1[int(l[0][0])] = 1
+                        if int(l[0][0]) > -1:
+                            line1[int(l[0][0])] = 1
                         line.append(line1)
                         line2 = np.zeros(self.num_classes2)
-                        line2[int(l[1][0])] = 1
+                        if int(l[1][0]) > -1:
+                            line2[int(l[1][0])] = 1
                         line.append(line2)
                         line=np.array(line)
                         assert l.shape[0] == 2, 'labels require 5 columns each'
                         assert l.shape[1] == 1, 'labels require 5 columns each'
-                        assert (l >= 0).all(), 'negative labels'
+                        # assert (l >= 0).all(), 'negative labels'
                     else:
                         ne += 1  # label empty
                         l = np.zeros((0, 1), dtype=np.float32)
