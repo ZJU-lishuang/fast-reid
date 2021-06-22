@@ -119,8 +119,8 @@ class AttrTrainer(DefaultTrainer):
                     results
                 )
                 logger.info("Evaluation results for {} in csv format:".format(dataset_name))
-                results_i[0]['dataset'] = dataset_name
-                results_i[1]['dataset'] = dataset_name
+                results_i[0]['dataset'] = dataset_name+"_attr1"
+                results_i[1]['dataset'] = dataset_name+"_attr2"
                 print_csv_format(results_i[0])
                 print_csv_format(results_i[1])
 
